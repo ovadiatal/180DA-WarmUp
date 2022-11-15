@@ -3,6 +3,36 @@
 # NOTE: this example requires PyAudio because it uses the Microphone class
 
 import speech_recognition as sr
+import cv2
+import numpy as np
+import multiprocessing
+
+# function for response to command
+
+def respond(command):
+    if "start" in command:
+        print("Start Recording")
+        cap = cv2.VideoCapture(0)
+
+        while(True):
+            # Capture frame-by-frame
+            ret, frame = cap.read()
+
+            # Display the resulting frame
+            cv2.imshow('frame',frame)
+            if cv2.waitKey(5) & 0xFF == 27:
+                break
+        # When everything done, release the capture
+        cap.release()
+        cv2.destroyAllWindows()
+
+
+# function to translate audio to command
+
+def hear(audio):
+    command = r.recognize_google(audio)
+    print("Google Speech Recognition thinks you said " + command)
+    return command
 
 # obtain audio from the microphone
 r = sr.Recognizer()
@@ -10,21 +40,20 @@ with sr.Microphone() as source:
     print("Say something!")
     audio = r.listen(source)
 
+
+
 # recognize speech using Google Speech Recognition
 try:
     # for testing purposes, we're just using the default API key
     # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
     # instead of `r.recognize_google(audio)`
 
-    command = r.recognize_google(audio)
+    command = hear(audio)
+    respond(command)
 
-    print("Google Speech Recognition thinks you said " + command)
 
-    if "start" in command
-        print("Start Recording")
-
-    if "end" in command
-        print("End Recording")
+    # if "end" in command:
+    #     print("End Recording")
         
 except sr.UnknownValueError:
     print("Google Speech Recognition could not understand audio")
